@@ -139,7 +139,7 @@ class Parameters(object):
 
     def __split_formula_and_value(self, data):
         formula_matcher = re.compile("{(.*)}")
-        if isinstance(data, (str, unicode)):
+        if isinstance(data, str):
             try:
                 value = float(data)
                 formula = ""
@@ -197,4 +197,3 @@ class Parameters(object):
     @property
     def per_vertex_thickness(self):
         return self.raw_parameters.get_thickness_type() == PyMesh.VERTEX
-

@@ -93,30 +93,6 @@ jobs:
         steps:
             - run: |
                 docker run -it --rm pymesh/pymesh:py3.5-slim python -c "import pymesh; pymesh.test()"
-    "py2.7":
-        machine: true
-        steps:
-            - checkout
-            - run:
-                command: |
-                    docker login -u $DOCKER_USER -p $DOCKER_PASS
-                    docker build -m 6g -t pymesh/pymesh:py2.7 --build-arg NUM_CORES=1 --build-arg BRANCH=$CIRCLE_BRANCH docker/py2.7
-                    [ "$CIRCLE_BRANCH" != "main" ] || docker push pymesh/pymesh:py2.7
-                no_output_timeout: 1200
-    "py2.7-slim":
-        machine: true
-        steps:
-            - checkout
-            - run: |
-                cd docker/py2.7-slim
-                docker login -u $DOCKER_USER -p $DOCKER_PASS
-                ./build.sh
-                docker push pymesh/pymesh:py2.7-slim
-    "py2.7-slim-test":
-        machine: true
-        steps:
-            - run: |
-                docker run -it --rm pymesh/pymesh:py2.7-slim python -c "import pymesh; pymesh.test()"
 
 workflows:
     version: 2
@@ -142,11 +118,6 @@ workflows:
                 filters:
                     branches:
                         only: main
-            - "py2.7":
-                filters:
-                    branches:
-                        only: main
-
             - "py3.7-slim":
                 requires:
                     - "py3.7"
@@ -156,10 +127,6 @@ workflows:
             - "py3.5-slim":
                 requires:
                     - "py3.5"
-            - "py2.7-slim":
-                requires:
-                    - "py2.7"
-
             - "py3.7-slim-test":
                 requires:
                     - "py3.7-slim"
@@ -169,7 +136,3 @@ workflows:
             - "py3.5-slim-test":
                 requires:
                     - "py3.5-slim"
-            - "py2.7-slim-test":
-                requires:
-                    - "py2.7-slim"
-

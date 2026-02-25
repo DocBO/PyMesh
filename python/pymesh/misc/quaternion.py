@@ -13,7 +13,7 @@ class Quaternion:
     """
 
     def __init__(self, quat=[1, 0, 0, 0]):
-        self.__quat = np.array(quat, dtype=np.float)
+        self.__quat = np.array(quat, dtype=float)
         self.normalize()
 
     @classmethod
@@ -186,4 +186,3 @@ class Quaternion:
     @property
     def z(self):
         return self.__quat[3]
-

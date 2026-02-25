@@ -38,7 +38,7 @@ It depends a number of state-of-the-art open source libraries:
 System dependencies
 ~~~~~~~~~~~~~~~~~~~
 
-* Python_: v2.7 or higher
+* Python_: v3.13 or higher
 * NumPy_: v1.8 or higher
 * SciPy_: v0.13 or higher
 * Eigen_: v3.2 or higher
@@ -71,7 +71,7 @@ On Linux, the system dependencies can be installed with `apt-get`::
 On MacOS, the system dependencies can be installed with MacPorts_::
 
     port install
-        python36 \
+        python313 \
         eigen3 \
         gmp \
         mpfr \
@@ -213,4 +213,3 @@ To check PyMesh is installed correctly, one can run the unit tests::
 
 Please make sure all unit tests are passed, and report any unit test
 failures.
-

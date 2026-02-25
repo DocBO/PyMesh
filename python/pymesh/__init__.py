@@ -2,17 +2,11 @@ from .version import __version__
 from . import PyMeshSetting
 from .timethis import timethis
 
-from numpy.testing import Tester
-test = Tester().test
-
 # Set default logging handler to avoid "No handler found" warnings.
 import logging
-try:  # Python 2.7+
-    from logging import NullHandler
-except ImportError:
-    class NullHandler(logging.Handler):
-        def emit(self, record):
-            pass
+from logging import NullHandler
+import os
+import unittest
 logging.getLogger(__name__).addHandler(NullHandler())
 
 from .Mesh import Mesh
@@ -54,6 +48,16 @@ from .igl_utils import face_normals, vertex_normals, edge_normals, orient_faces
 from .map_attributes import map_vertex_attribute
 from .map_attributes import map_face_attribute
 from .map_attributes import map_corner_attribute
+
+def test(verbosity=1):
+    package_root = os.path.dirname(__file__)
+    loader = unittest.defaultTestLoader
+    suite = unittest.TestSuite()
+    for rel_dir in ("tests", "meshutils/tests", "wires/tests"):
+        suite.addTests(loader.discover(
+                start_dir=os.path.join(package_root, rel_dir),
+                pattern="test_*.py"))
+    return unittest.TextTestRunner(verbosity=verbosity).run(suite)
 
 __all__ = [
         "Mesh",
