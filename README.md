@@ -20,8 +20,6 @@ Current architecture:
 
 ### Documentation ###
 
-[Latest documentation](https://pymesh.readthedocs.io/en/latest/)
-
 ### Documentation HOWTO
 
 Build docs locally:
