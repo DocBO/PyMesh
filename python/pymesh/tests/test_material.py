@@ -80,4 +80,13 @@ else:
             self.assert_array_almost_equal(iso_mat.material_tensor,
                     ortho_mat.material_tensor)
 
+        def test_periodic_material(self):
+            mat_1 = Material.create_isotropic(2, 1.0, 1.0, 0.0)
+            mat_2 = Material.create_isotropic(2, 2.0, 2.0, 0.0)
+            periodic = Material.create_periodic(
+                    mat_1, mat_2, np.array([1.0, 0.0]), 2.0, 0.5)
+
+            self.assertEqual(2, periodic.dim)
+            self.assertEqual(mat_1.density, periodic.get_density(np.array([0.25, 0.0])))
+            self.assertEqual(mat_2.density, periodic.get_density(np.array([1.25, 0.0])))
 

@@ -13,6 +13,7 @@ using namespace PyMesh;
 void init_FEM(py::module& m) {
     py::class_<Material, std::shared_ptr<Material> >(m, "Material")
         .def_static("create", &Material::create)
+        .def_static("create_symmetric", &Material::create_symmetric)
         .def_static("create_isotropic", &Material::create_isotropic)
         .def_static("create_orthotropic", &Material::create_orthotropic)
         .def_static("create_periodic", &Material::create_periodic)
