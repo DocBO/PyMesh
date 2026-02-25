@@ -103,7 +103,7 @@ bool BooleanEngine::supports(const std::string& engine_name) {
     return false;
 }
 
-std::vector<std::string> get_available_engines() {
+std::vector<std::string> BooleanEngine::get_available_engines() {
     std::vector<std::string> engine_names;
 #if WITH_IGL_AND_CGAL
     engine_names.push_back("igl");
@@ -162,4 +162,3 @@ void BooleanEngine::remove_isolated_vertices() {
 void BooleanEngine::serialize_xml(const std::string& filename) const {
     throw NotImplementedError("Serialization is not supported");
 }
-

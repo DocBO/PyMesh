@@ -83,6 +83,59 @@ TetrahedralizationEngine::Ptr TetrahedralizationEngine::create(
     throw NotImplementedError(err_msg.str());
 }
 
+bool TetrahedralizationEngine::supports(const std::string& engine_name) {
+#if WITH_CGAL
+    if (engine_name == "cgal") return true;
+    if (engine_name == "cgal_no_features") return true;
+#if WITH_IGL
+    if (engine_name == "cgal_implicit") return true;
+#endif
+#endif
+#if WITH_TETGEN
+    if (engine_name == "tetgen") return true;
+#if WITH_MMG && WITH_IGL
+    if (engine_name == "mmg") return true;
+#endif
+#endif
+#if WITH_GEOGRAM
+    if (engine_name == "geogram") return true;
+#endif
+#if WITH_QUARTET
+    if (engine_name == "quartet") return true;
+#endif
+#if WITH_TETWILD
+    if (engine_name == "tetwild") return true;
+#endif
+    return false;
+}
+
+std::vector<std::string> TetrahedralizationEngine::get_available_engines() {
+    std::vector<std::string> engine_names;
+#if WITH_CGAL
+    engine_names.push_back("cgal");
+    engine_names.push_back("cgal_no_features");
+#if WITH_IGL
+    engine_names.push_back("cgal_implicit");
+#endif
+#endif
+#if WITH_TETGEN
+    engine_names.push_back("tetgen");
+#if WITH_MMG && WITH_IGL
+    engine_names.push_back("mmg");
+#endif
+#endif
+#if WITH_GEOGRAM
+    engine_names.push_back("geogram");
+#endif
+#if WITH_QUARTET
+    engine_names.push_back("quartet");
+#endif
+#if WITH_TETWILD
+    engine_names.push_back("tetwild");
+#endif
+    return engine_names;
+}
+
 void TetrahedralizationEngine::preprocess() {
     assert_mesh_is_valid();
     auto_compute_meshing_params();

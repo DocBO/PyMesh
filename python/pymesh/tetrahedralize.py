@@ -33,7 +33,8 @@ def tetrahedralize(mesh,
         feature_angle (``float``): Angle threshold (in degrees) for feature extraction.
         engine (``string``): The tetrahedralization engine to use.  Valid options are:
 
-            * ``auto``: default to tetgen
+            * ``auto``: choose first available engine from ``tetgen``, ``cgal``,
+              ``geogram``, ``quartet``, ``tetwild``, ``mmg``.
             * ``cgal``: `CGAL 3D mesh generation`_, using Polyhedron domain with
               auto feature extraction.
             * ``cgal_no_features``: `CGAL 3D mesh generation`_,
@@ -59,6 +60,10 @@ def tetrahedralize(mesh,
     .. _`VegaFEM`: http://run.usc.edu/vega/
     .. _`MMG3D`: https://www.mmgtools.org/
     .. _`TetWild`: https://github.com/Yixin-Hu/TetWild
+
+    Engine availability can be queried from low-level bindings via
+    ``PyMesh.TetrahedralizationEngine.supports(name)`` and
+    ``PyMesh.TetrahedralizationEngine.available_engines``.
     """
     logger = logging.getLogger(__name__)
     bbox_min, bbox_max = mesh.bbox
@@ -83,7 +88,13 @@ def tetrahedralize(mesh,
     if mesh.vertex_per_face != 3:
         raise NotImplementedError("Only triangle mesh is supported for now")
     if engine == 'auto':
-        engine = 'tetgen'
+        preferred = ["tetgen", "cgal", "geogram", "quartet", "tetwild", "mmg"]
+        for name in preferred:
+            if PyMesh.TetrahedralizationEngine.supports(name):
+                engine = name
+                break
+        else:
+            raise NotImplementedError("No supported tetrahedralization engine")
 
     if engine == 'delpsc':
         exec_name = "DelPSC"
@@ -149,7 +160,7 @@ def tetrahedralize(mesh,
             running_time = finish_time - start_time
         logger.info("VegaFEM tetMesher done.")
         vega_mesh = load_mesh(output_file)
-        if with_time:
+        if with_timing:
             return vega_mesh, running_time
         else:
             return vega_mesh
@@ -184,4 +195,3 @@ def tetrahedralize(mesh,
             return output_mesh, running_time
         else:
             return output_mesh
-

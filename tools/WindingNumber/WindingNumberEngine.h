@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 #include <Core/EigenTypedef.h>
 #include <Core/Exception.h>
 
@@ -12,6 +13,8 @@ class WindingNumberEngine {
     public:
         typedef std::shared_ptr<WindingNumberEngine> Ptr;
         static Ptr create(const std::string& engine_name);
+        static bool supports(const std::string& engine_name);
+        static std::vector<std::string> get_available_engines();
 
     public:
         virtual ~WindingNumberEngine() = default;

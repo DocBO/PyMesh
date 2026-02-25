@@ -13,6 +13,10 @@ using namespace PyMesh;
 void init_Boolean(py::module& m) {
     py::class_<BooleanEngine, std::shared_ptr<BooleanEngine> >(m, "BooleanEngine")
         .def_static("create", &BooleanEngine::create)
+        .def_static("supports", &BooleanEngine::supports)
+        .def_property_readonly_static("available_engines",
+                [](py::object){
+                return BooleanEngine::get_available_engines();})
         .def("set_mesh_1", &BooleanEngine::set_mesh_1)
         .def("set_mesh_2", &BooleanEngine::set_mesh_2)
         .def("get_vertices", &BooleanEngine::get_vertices)

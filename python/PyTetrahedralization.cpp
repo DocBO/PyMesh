@@ -14,6 +14,10 @@ void init_Tetrahedralization(py::module& m) {
         std::shared_ptr<TetrahedralizationEngine> >(
                 m, "TetrahedralizationEngine")
     .def_static("create", &TetrahedralizationEngine::create)
+    .def_static("supports", &TetrahedralizationEngine::supports)
+    .def_property_readonly_static("available_engines",
+            [](py::object){
+            return TetrahedralizationEngine::get_available_engines();})
     .def("run", &TetrahedralizationEngine::run)
     .def("set_vertices", &TetrahedralizationEngine::set_vertices)
     .def("set_faces", &TetrahedralizationEngine::set_faces)

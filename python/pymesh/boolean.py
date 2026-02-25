@@ -6,13 +6,17 @@ from .meshio import form_mesh
 from . import boolean_unsupported
 
 def _auto_select_engine(dim):
+    preferred = []
     if dim == 2:
-        engine = "clipper"
+        preferred = ["clipper"]
     elif dim == 3:
-        engine = "igl"
+        preferred = ["igl", "corefinement", "cgal", "cork", "carve", "bsp"]
     else:
         raise NotImplementedError("Dimension {} is not supported".format(dim))
-    return engine
+    for engine in preferred:
+        if PyMesh.BooleanEngine.supports(engine):
+            return engine
+    raise NotImplementedError("No supported boolean engine for dim={}".format(dim))
 
 def boolean(mesh_1, mesh_2, operation, engine="auto", with_timing=False,
         exact_mesh_file=None):
@@ -23,16 +27,17 @@ def boolean(mesh_1, mesh_2, operation, engine="auto", with_timing=False,
         mesh_2 (:class:`Mesh`): The second input mesh, :math:`M_2`.
         operation (``string``): The name of the operation.  Valid choices are:
 
-            * ``intersection``: :math:`M_1 \cap M_2`
-            * ``union``: :math:`M_1 \cup M_2`
-            * ``difference``: :math:`M_1 \setminus M_2`
-            * ``symmetric_difference``: :math:`(M_1 \setminus M_2) \cup
-              (M_2 \setminus M_1)`
+            * ``intersection``: :math:`M_1 \\cap M_2`
+            * ``union``: :math:`M_1 \\cup M_2`
+            * ``difference``: :math:`M_1 \\setminus M_2`
+            * ``symmetric_difference``: :math:`(M_1 \\setminus M_2) \\cup
+              (M_2 \\setminus M_1)`
 
         engine (``string``): (optional) Boolean engine name.  Valid engines include:
 
-            * ``auto``: Using the default boolean engine
-              (``igl`` for 3D and ``clipper`` for 2D).  This is the default.
+            * ``auto``: Use the first available engine from a preferred list
+              (2D: ``clipper``; 3D: ``igl``, ``corefinement``, ``cgal``,
+              ``cork``, ``carve``, ``bsp``).
             * ``cork``: `Cork 3D boolean libary
               <https://github.com/gilbo/cork>`_
             * ``cgal``: `CGAL 3D boolean operations on Nef Polyhedra
@@ -45,6 +50,10 @@ def boolean(mesh_1, mesh_2, operation, engine="auto", with_timing=False,
               <http://www.angusj.com/delphi/clipper.php>`_
             * ``carve``: `Carve solid geometry library
               <https://code.google.com/p/carve/>`_
+
+            Availability can be checked from low-level bindings via
+            ``PyMesh.BooleanEngine.supports(name)`` and
+            ``PyMesh.BooleanEngine.available_engines``.
 
         with_timing (``boolean``): (optional) Whether to time the code.
         exact_mesh_file (``str``): (optional) Filename to store the XML
@@ -109,4 +118,3 @@ def boolean(mesh_1, mesh_2, operation, engine="auto", with_timing=False,
         return output_mesh, running_time
     else:
         return output_mesh
-

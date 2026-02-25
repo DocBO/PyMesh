@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 #include <iostream>
 #include <Core/EigenTypedef.h>
 #include <Core/Exception.h>
@@ -13,6 +14,8 @@ class TetrahedralizationEngine {
     public:
         typedef std::shared_ptr<TetrahedralizationEngine> Ptr;
         static Ptr create(const std::string& engine_name);
+        static bool supports(const std::string& engine_name);
+        static std::vector<std::string> get_available_engines();
 
     public:
         TetrahedralizationEngine() = default;

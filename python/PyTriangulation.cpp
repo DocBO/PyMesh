@@ -12,6 +12,10 @@ using namespace PyMesh;
 void init_Triangulation(py::module& m) {
     py::class_<Triangulation, std::shared_ptr<Triangulation> >(m, "Triangulation")
         .def_static("create", &Triangulation::create)
+        .def_static("supports", &Triangulation::supports)
+        .def_property_readonly_static("available_engines",
+                [](py::object){
+                return Triangulation::get_available_engines();})
         .def("set_points", &Triangulation::set_points)
         .def("set_segments", &Triangulation::set_segments)
         .def("set_vertices", &Triangulation::set_vertices)
