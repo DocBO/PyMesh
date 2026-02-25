@@ -1,167 +1,144 @@
 [![CircleCI](https://circleci.com/gh/PyMesh/PyMesh/tree/main.svg?style=svg)](https://circleci.com/gh/PyMesh/PyMesh/tree/main)
-[![Build Status](https://travis-ci.org/PyMesh/PyMesh.svg?branch=main)](https://travis-ci.org/PyMesh/PyMesh)
 [![Documentation Status](https://readthedocs.org/projects/pymesh/badge/?version=latest)](https://pymesh.readthedocs.io/en/latest/?badge=latest)
-
 
 ### About PyMesh ###
 
-**PyMesh** is a code base developed by Qingnan Zhou for his PhD research at New
-York University.  It is a rapid prototyping platform focused on geometry
-processing.  **PyMesh** is written with both C++ and Python, where
-computational intensive functionalities are realized in C++, and Python is used
-for creating minimalistic and easy to use interfaces.
+**PyMesh** is a geometry-processing toolkit with a C++ computational core and a
+Python API layer.
+
+Current architecture:
+
+- Core mesh data structures and algorithms are implemented in `src/` and `tools/`.
+- Python bindings are built with **pybind11** from `python/`.
+- Optional third-party backends (CGAL, libigl, TetGen, Triangle, MMG, Draco,
+  etc.) are compiled from `third_party/` and linked into the same Python module.
+- Backend selection is runtime-configurable in Python (for example boolean,
+  triangulation, tetrahedralization, winding number engines).
 
 ![PyMesh][teaser]
 (Model source: [Bust of Sappho](https://www.thingiverse.com/thing:14565))
 
 ### Documentation ###
 
-[Latest documentation](http://pymesh.readthedocs.org/en/latest/)
+[Latest documentation](https://pymesh.readthedocs.io/en/latest/)
 
-### Quick try ###
+### Documentation HOWTO
 
-Perhaps the easiest way of trying out PyMesh is through
-[docker](https://www.docker.com/):
+Build docs locally:
 
-    docker run -it pymesh/pymesh
-    Python 3.6.4 (default, Feb 17 2018, 09:32:33)
-    [GCC 4.9.2] on linux
-    Type "help", "copyright", "credits" or "license" for more information.
-    >>> import pymesh
+```bash
+cd $PYMESH_PATH
+python3 -m pip install sphinx
+make -C docs html
+```
 
-For example, to run [meshstat.py](scripts/meshstat.py):
+Generated site:
 
-    docker run -it --rm -v `pwd`:/models pymesh/pymesh meshstat.py -x /models/model.obj
+- `docs/_build/html/index.html`
 
-This command mounts your current working directory to the `/models` directory
-in a docker container and executes the `meshstat.py` script on the mesh file
-`model.obj` in the current directory.
+Useful checks:
+
+```bash
+# Fail on warnings in CI
+make -C docs clean
+make -C docs html SPHINXOPTS="-W --keep-going"
+
+# External link validation
+make -C docs linkcheck
+```
+
+Preview locally in a browser:
+
+```bash
+cd $PYMESH_PATH/docs/_build/html
+python3 -m http.server 8000
+```
+
+Then open `http://127.0.0.1:8000`.
+
+Clean and rebuild from scratch:
+
+```bash
+make -C docs clean
+make -C docs html
+```
+
+### Repository Layout ###
+
+- `src/`: core mesh library (geometry, IO, attributes, connectivity).
+- `tools/`: algorithm engines (boolean, triangulation, tetrahedralization,
+  convex hull, winding number, etc.).
+- `python/`: pybind11 module sources and high-level `pymesh` Python package.
+- `tests/`: C++ unit tests and test data.
+- `third_party/`: vendored dependencies and build scripts.
 
 ### Download Source ###
 
-To retrieve the code:
-
-    git clone https://github.com/PyMesh/PyMesh.git
-    cd PyMesh
-    git submodule update --init
+```bash
+git clone https://github.com/PyMesh/PyMesh.git
+cd PyMesh
+git submodule update --init --recursive
+```
 
 ### Dependencies ###
 
-PyMesh has the following required dependencies:
+Required runtime:
 
-* [Python](https://www.python.org/) v2.7 and v3.x.
-* [NumPy](http://www.numpy.org/) v1.8 or higher
-* [SciPy](http://www.scipy.org/) v0.13 or higher
-* [nose](http://nose.readthedocs.io/en/latest/) v1.3.7 or higher
+- [Python](https://www.python.org/) **3.13+**
+- [NumPy](http://www.numpy.org/)
+- [SciPy](http://www.scipy.org/)
 
-The following C++ libraries are required.  They are included in
-`$PYMESH_PATH/third_party` directory.
+Required build tooling/libraries (Linux):
 
-* [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page) v3.2 or higher
-* [PyBind11](https://github.com/pybind/pybind11)
+- `build-essential`, `cmake`, `python3-dev`
+- `libeigen3-dev`, `libgmp-dev`, `libgmpxx4ldbl`, `libmpfr-dev`
+- `libboost-dev`, `libboost-thread-dev`, `libtbb-dev`
 
-PyMesh also has a number of optional dependencies:
-
-* [Carve](https://github.com/qnzhou/carve): A fast, robust constructive solid
-  geometry library.
-* [CGAL](https://www.cgal.org/): The Computational Geometry Algorithms Library.
-* [Clipper](http://www.angusj.com/delphi/clipper.php): An open source freeware
-  library for clipping and offsetting lines and polygons.
-* [Cork](https://github.com/gilbo/cork): A 3D boolean/CSG library.
-* [Draco](https://google.github.io/draco/): An open-source library for
-  compressing and decompressing 3D geometric meshes and point clouds
-* [Geogram](http://alice.loria.fr/software/geogram/doc/html/index.html): A
-  programming library of geometric algorithms
-* [libigl](http://igl.ethz.ch/projects/libigl/): A simple C++ geometry
-  processing library.
-* [MMG](https://www.mmgtools.org/): Robust, open source & multidisciplinary
-  software for remeshing.
-* [Qhull](http://www.qhull.org/): Engine for convex hulls, Delaunay
-  triangulations, Voronoi diagrams computations.
-* [Quartet](https://github.com/crawforddoran/quartet): A tetrahedral mesh
-  generator that does isosurface stuffing with an acute tetrahedral tile.
-* [TBB](https://www.threadingbuildingblocks.org/): Thread building blocks from
-  Intel.
-* [Tetgen](http://wias-berlin.de/software/tetgen/): Tetrahedral mesh generation
-  engine.
-* [Triangle](http://www.cs.cmu.edu/~quake/triangle.html): A two-Dimensional
-  quality mesh generator and Delaunay triangulator.
-
-All of the optional libraries are included in `$PYMESH_PATH/third_party`
-directory.
-
-### Specify Dependency Locations ###
-
-All dependencies are included as git submodules in the `third_party` directory.
-It is recommended to build these dependencies directly (see [Build](#Build) section).
-However, it is possible to use an existing dependency installed on your system.
-If the dependent library is not installed in standard locations
-(``/usr/local/``, ``/opt/local``), one needs to set environment variables that
-point to the correct directories.  PyMesh check the following environment
-variables:
-
-* Eigen: Set ``EIGEN_PATH`` to the directory containing the `eigen3` directory.
-* CGAL: Set ``CGAL_PATH`` to the directory containing `UseCGAL.cmake` file.
-    * Boost: Set ``BOOST_INC`` to the directory containing boost.
-    * GMP: Set ``GMP_INC`` and ``GMP_LIB`` to the directories containing GMP
-      header and library.
-* libigl: Set ``LIBIGL_PATH`` the ``include`` directory of libigl sources.
-* Cork: Set ``CORK_PATH`` to the install directory of Cork.
-* Tetgen: Set ``TETGEN_PATH`` to the install directory of Tetgen.
-* Triangle: Set ``TRIANGLE_PATH`` to the install directory of Triangle.
-* Qhull: Set ``QHULL_PATH`` to the install directory of Qhull.
-* Clipper: Set ``CLIPPER_PATH`` to the install directory of Clipper.
-* Carve: Set ``CARVE_PATH`` to the install directory of Carve.
-* Geogram: Set ``GEOGRAM_PATH`` to the install directory of Geogram.
-* Quartet: Set ``QUARTET_PATH`` to the install directory of Quartet.
-* Draco: Set ``Draco_PATH`` to the install directory of Draco.
-* MMG: Set ``MMG_PATH`` to the install directory of MMG.
+Most optional geometry libraries are included as submodules under
+`third_party/` and are built locally.
 
 ### Build ###
 
-Let `$PYMESH_PATH` be the root directory of the repository.
-The first step is to compile the optional third party dependencies:
+Let `$PYMESH_PATH` be the repository root.
 
-    cd $PYMESH_PATH/third_party
-    build.py all
+1. Build third-party dependencies:
 
-Third party dependencies will be installed in
-`$PYMESH_PATH/python/pymesh/third_party` directory.
+```bash
+cd $PYMESH_PATH/third_party
+./build.py all
+```
 
-Now we can build the main project.  It is recommended to build out of source:
+2. Configure and build PyMesh:
 
-    cd $PYMESH_PATH
-    mkdir build
-    cd build
-    cmake ..
+```bash
+cd $PYMESH_PATH
+mkdir -p build
+cd build
+cmake .. -DPython_EXECUTABLE=$(which python)
+make -j$(nproc)
+make tests
+```
 
-To build the PyMesh library:
+### Python Test Run ###
 
-    make
-    make tests
+Run Python-side tests against the in-repo package:
 
-Make sure all unit tests are passed before using the library.
+```bash
+cd $PYMESH_PATH
+python3 -c "import sys; sys.path.insert(0, 'python'); import pymesh; r=pymesh.test(verbosity=1); import sys as _s; _s.exit(0 if r.wasSuccessful() else 1)"
+```
 
 ### Install ###
 
-The output of building PyMesh consists a set of C++ libraries and a python
-module. Installing the C++ library is currently not available.  However,
-installing the python package can be done:
-
-    ./setup.py build # This an alternative way of calling cmake/make
-    ./setup.py install
-
-To check PyMesh is installed correctly, run the following python unit tests::
-
-    python -c "import pymesh; pymesh.test()"
-
-Once again, make sure all unit tests are passed, and report any unit test
-failures.
+```bash
+cd $PYMESH_PATH
+./setup.py build
+./setup.py install --user
+```
 
 ### Feedback ###
 
-Thank you for using PyMesh!  Please consider help PyMesh improve by leaving
-[feedback]!
+Thank you for using PyMesh. Please consider leaving [feedback][feedback].
 
 [teaser]: docs/_static/pymesh_teaser.jpg
 [feedback]: https://docs.google.com/forms/d/e/1FAIpQLSc8YAzx1SL4t3qntzahYd0igPNGyIxw6N8eRs-PloYlwbPaXg/viewform?usp=pp_url

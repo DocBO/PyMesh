@@ -72,7 +72,7 @@ release = '0.2.1'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
@@ -295,14 +295,14 @@ texinfo_documents = [
 #texinfo_no_detailmenu = False
 
 # Mock out C/C++ modules
-from mock import Mock as MagicMock
+from unittest.mock import Mock as MagicMock
 
 class Mock(MagicMock):
     @classmethod
     def __getattr__(cls, name):
             return Mock()
 
-MOCK_MODULES = ['numpy', 'numpy.linalg', 'numpy.testing', 'PyMesh'];
+MOCK_MODULES = ['PyMesh'];
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 sys.modules['PyMesh'].Arrangement2 = object;
 sys.modules['PyMesh'].triangle = object;
